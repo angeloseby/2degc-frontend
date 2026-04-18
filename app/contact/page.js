@@ -1,26 +1,18 @@
 import React from 'react';
+import PageHeader from '@/components/Sections/PageHeader';
 
 export const metadata = {
-  title: "Contact Us - Solartec",
+  title: "Contact Us - 2degc",
 };
+
 
 export default function Contact() {
     return (
         <main>
-            {/* Page Header Start */}
-            <div className="container-fluid page-header py-5 mb-5">
-                <div className="container py-5">
-                    <h1 className="display-3 text-white mb-3 animated slideInDown">Contact</h1>
-                    <nav aria-label="breadcrumb animated slideInDown">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a className="text-white" href="/">Home</a></li>
-                            <li className="breadcrumb-item"><a className="text-white" href="/">Pages</a></li>
-                            <li className="breadcrumb-item text-white active" aria-current="page">Contact</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-            {/* Page Header End */}
+            <PageHeader 
+                title="Contact Us" 
+                breadcrumbs={[{ label: "Contact" }]}
+            />
 
             {/* Contact Start */}
             <div className="container-fluid bg-light overflow-hidden px-lg-0" style={{ margin: '6rem 0' }}>
@@ -30,7 +22,7 @@ export default function Contact() {
                             <div className="p-lg-5 ps-lg-0">
                                 <h6 className="text-primary">Contact Us</h6>
                                 <h1 className="mb-4">Feel Free To Contact Us</h1>
-                                <p className="mb-4">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
+                                <p className="mb-4">Have questions about solar installation or renewable energy? Our team is here to help you transition to a sustainable future. Fill out the form below or visit our office.</p>
                                 <form>
                                     <div className="row g-3">
                                         <div className="col-md-6">

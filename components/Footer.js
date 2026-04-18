@@ -16,7 +16,8 @@ const Footer = ({ data, copyright }) => {
     };
 
     const footer = data || defaultData;
-    const finalCopyright = copyright || "Solartec, All Right Reserved.";
+    const finalCopyright = copyright || "2degc, All Right Reserved.";
+
 
     return (
         <div className="container-fluid bg-dark text-body footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">

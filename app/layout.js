@@ -7,9 +7,10 @@ import Footer from "@/components/Footer";
 import { fetchAPI } from "@/lib/api";
 
 export const metadata = {
-  title: "Solartec - Renewable Energy Website Template",
+  title: "2degc - Renewable Energy Solutions",
   description: "Pioneers Of Solar And Renewable Energy",
 };
+
 
 export default async function RootLayout({ children }) {
   // Fetch global data from Strapi

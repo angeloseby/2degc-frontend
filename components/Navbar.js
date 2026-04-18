@@ -45,17 +45,8 @@ const Navbar = ({ data }) => {
                         </Link>
                     ))}
                     
-                    {/* Keep Pages dropdown static for now or make it dynamic if desired */}
-                    <div className="nav-item dropdown">
-                        <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div className="dropdown-menu bg-light m-0">
-                            <Link href="/feature" className="dropdown-item">Feature</Link>
-                            <Link href="/quote" className="dropdown-item">Free Quote</Link>
-                            <Link href="/team" className="dropdown-item">Our Team</Link>
-                            <Link href="/testimonial" className="dropdown-item">Testimonial</Link>
-                            <Link href="/404" className="dropdown-item">404 Page</Link>
-                        </div>
-                    </div>
+                    {/* Pages dropdown removed for cleaner navigation */}
+
                 </div>
                 <Link href={cta.href} className="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">
                     {cta.label}<i className="fa fa-arrow-right ms-3"></i>

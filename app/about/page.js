@@ -1,157 +1,61 @@
 import React from 'react';
-import Image from 'next/image';
-import { fetchAPI, getStrapiMedia } from '@/lib/api';
+import { fetchAPI } from '@/lib/api';
+import AboutSection from '@/components/Sections/AboutSection';
+import StatisticsSection from '@/components/Sections/StatisticsSection';
+import TeamSection from '@/components/Sections/TeamSection';
+import PageHeader from '@/components/Sections/PageHeader';
 
 export const metadata = {
-  title: "About Us - Solartec",
+  title: "About Us - 2degc",
 };
 
+
 export default async function About() {
-    // Fetch team members from Strapi
-    const teamRes = await fetchAPI("/team-members", { populate: "*" });
-    const teamMembers = teamRes?.data || [];
+    // Fetch all About page and Team data
+    let aboutPageData = null;
+    let teamMembers = [];
+
+    try {
+        const [aboutRes, teamRes] = await Promise.all([
+            fetchAPI("/about-page", { 
+                populate: {
+                    BannerImage: { populate: '*' },
+                    About: { 
+                        populate: {
+                            FeaturedImage: { populate: '*' },
+                            Checklist: { populate: '*' }
+                        }
+                    },
+                    Stats: { populate: { Items: { populate: '*' } } }
+                } 
+            }),
+            fetchAPI("/team-members", { populate: "*" })
+        ]);
+
+        aboutPageData = aboutRes?.data;
+        teamMembers = teamRes?.data || [];
+    } catch (error) {
+        console.error("Failed to fetch About page data:", error);
+    }
+
+    const attrs = aboutPageData || {};
 
     return (
         <main>
-            {/* Page Header Start */}
-            <div className="container-fluid page-header py-5 mb-5">
-                <div className="container py-5">
-                    <h1 className="display-3 text-white mb-3 animated slideInDown">About Us</h1>
-                    <nav aria-label="breadcrumb animated slideInDown">
-                        <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a className="text-white" href="/">Home</a></li>
-                            <li className="breadcrumb-item"><a className="text-white" href="/">Pages</a></li>
-                            <li className="breadcrumb-item text-white active" aria-current="page">About</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-            {/* Page Header End */}
+            <PageHeader 
+                title={attrs.About?.Title || "About Us"} 
+                bannerImage={attrs.BannerImage}
+                breadcrumbs={[{ label: "About Us" }]}
+            />
 
-            {/* Feature Start */}
-            <div className="container-xxl py-5">
-                <div className="container">
-                    <div className="row g-5">
-                        <div className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
-                            <div className="d-flex align-items-center mb-4">
-                                <div className="btn-lg-square bg-primary rounded-circle me-3">
-                                    <i className="fa fa-users text-white"></i>
-                                </div>
-                                <h1 className="mb-0" data-toggle="counter-up">3453</h1>
-                            </div>
-                            <h5 className="mb-3">Happy Customers</h5>
-                            <span>Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit</span>
-                        </div>
-                        <div className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
-                            <div className="d-flex align-items-center mb-4">
-                                <div className="btn-lg-square bg-primary rounded-circle me-3">
-                                    <i className="fa fa-check text-white"></i>
-                                </div>
-                                <h1 className="mb-0" data-toggle="counter-up">4234</h1>
-                            </div>
-                            <h5 className="mb-3">Project Done</h5>
-                            <span>Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit</span>
-                        </div>
-                        <div className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
-                            <div className="d-flex align-items-center mb-4">
-                                <div className="btn-lg-square bg-primary rounded-circle me-3">
-                                    <i className="fa fa-award text-white"></i>
-                                </div>
-                                <h1 className="mb-0" data-toggle="counter-up">3123</h1>
-                            </div>
-                            <h5 className="mb-3">Awards Win</h5>
-                            <span>Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit</span>
-                        </div>
-                        <div className="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
-                            <div className="d-flex align-items-center mb-4">
-                                <div className="btn-lg-square bg-primary rounded-circle me-3">
-                                    <i className="fa fa-users-cog text-white"></i>
-                                </div>
-                                <h1 className="mb-0" data-toggle="counter-up">1831</h1>
-                            </div>
-                            <h5 className="mb-3">Expert Workers</h5>
-                            <span>Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/* Feature Start */}
+            {/* Statistics Section */}
+            <StatisticsSection data={attrs.Stats} />
 
-            {/* About Start */}
-            <div className="container-fluid bg-light overflow-hidden my-5 px-lg-0">
-                <div className="container about px-lg-0">
-                    <div className="row g-0 mx-lg-0">
-                        <div className="col-lg-6 ps-lg-0 wow fadeIn" data-wow-delay="0.1s" style={{ minHeight: '400px' }}>
-                            <div className="position-relative h-100">
-                                <img className="position-absolute img-fluid w-100 h-100" src="/img/about.jpg" style={{ objectFit: 'cover' }} alt="" />
-                            </div>
-                        </div>
-                        <div className="col-lg-6 about-text py-5 wow fadeIn" data-wow-delay="0.5s">
-                            <div className="p-lg-5 pe-lg-0">
-                                <h6 className="text-primary">About Us</h6>
-                                <h1 className="mb-4">25+ Years Experience In Solar & Renewable Energy Industry</h1>
-                                <p>Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo erat amet</p>
-                                <p><i className="fa fa-check-circle text-primary me-3"></i>Diam dolor diam ipsum</p>
-                                <p><i className="fa fa-check-circle text-primary me-3"></i>Aliqu diam amet diam et eos</p>
-                                <p><i className="fa fa-check-circle text-primary me-3"></i>Tempor erat elitr rebum at clita</p>
-                                <a href="" className="btn btn-primary rounded-pill py-3 px-5 mt-3">Explore More</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/* About End */}
+            {/* Main About Section */}
+            <AboutSection data={attrs.About} />
 
-            {/* Team Start */}
-            <div className="container-xxl py-5">
-                <div className="container">
-                    <div className="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style={{ maxWidth: '600px' }}>
-                        <h6 className="text-primary">Team Member</h6>
-                        <h1 className="mb-4">Experienced Team Members</h1>
-                    </div>
-                    <div className="row g-4">
-                        {teamMembers.map((member, index) => {
-                            // Support both Strapi 4 and 5 structures
-                            const attrs = member.attributes || member;
-                            const imageUrl = getStrapiMedia(attrs.Image?.data?.attributes?.url || attrs.Image?.url);
-                            
-                            return (
-                                <div key={member.id || index} className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`}>
-                                    <div className="team-item rounded overflow-hidden">
-                                        <div className="d-flex">
-                                            <div className="position-relative w-75" style={{ height: '300px' }}>
-                                                {imageUrl ? (
-                                                    <Image 
-                                                        src={imageUrl} 
-                                                        alt={attrs.Name || "Team Member"} 
-                                                        fill
-                                                        style={{ objectFit: 'cover' }}
-                                                        className="img-fluid"
-                                                    />
-                                                ) : (
-                                                    <div className="bg-secondary w-100 h-100 d-flex align-items-center justify-content-center text-white">
-                                                        No Image
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="team-social w-25">
-                                                <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                                <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                                <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
-                                            </div>
-                                        </div>
-                                        <div className="p-4">
-                                            <h5>{attrs.Name || "Full Name"}</h5>
-                                            <span>{attrs.Designation || "Designation"}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </div>
-            {/* Team End */}
+            {/* Team Section */}
+            <TeamSection members={teamMembers} />
         </main>
     );
 }
