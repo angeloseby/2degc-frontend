@@ -1,10 +1,16 @@
 import React from 'react';
+import Image from 'next/image';
+import { fetchAPI, getStrapiMedia } from '@/lib/api';
 
 export const metadata = {
   title: "About Us - Solartec",
 };
 
-export default function About() {
+export default async function About() {
+    // Fetch team members from Strapi
+    const teamRes = await fetchAPI("/team-members", { populate: "*" });
+    const teamMembers = teamRes?.data || [];
+
     return (
         <main>
             {/* Page Header Start */}
@@ -13,8 +19,8 @@ export default function About() {
                     <h1 className="display-3 text-white mb-3 animated slideInDown">About Us</h1>
                     <nav aria-label="breadcrumb animated slideInDown">
                         <ol className="breadcrumb">
-                            <li className="breadcrumb-item"><a className="text-white" href="#">Home</a></li>
-                            <li className="breadcrumb-item"><a className="text-white" href="#">Pages</a></li>
+                            <li className="breadcrumb-item"><a className="text-white" href="/">Home</a></li>
+                            <li className="breadcrumb-item"><a className="text-white" href="/">Pages</a></li>
                             <li className="breadcrumb-item text-white active" aria-current="page">About</li>
                         </ol>
                     </nav>
@@ -104,54 +110,44 @@ export default function About() {
                         <h1 className="mb-4">Experienced Team Members</h1>
                     </div>
                     <div className="row g-4">
-                        <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                            <div className="team-item rounded overflow-hidden">
-                                <div className="d-flex">
-                                    <img className="img-fluid w-75" src="/img/team-1.jpg" alt="" />
-                                    <div className="team-social w-25">
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
+                        {teamMembers.map((member, index) => {
+                            // Support both Strapi 4 and 5 structures
+                            const attrs = member.attributes || member;
+                            const imageUrl = getStrapiMedia(attrs.Image?.data?.attributes?.url || attrs.Image?.url);
+                            
+                            return (
+                                <div key={member.id || index} className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay={`${0.1 * (index + 1)}s`}>
+                                    <div className="team-item rounded overflow-hidden">
+                                        <div className="d-flex">
+                                            <div className="position-relative w-75" style={{ height: '300px' }}>
+                                                {imageUrl ? (
+                                                    <Image 
+                                                        src={imageUrl} 
+                                                        alt={attrs.Name || "Team Member"} 
+                                                        fill
+                                                        style={{ objectFit: 'cover' }}
+                                                        className="img-fluid"
+                                                    />
+                                                ) : (
+                                                    <div className="bg-secondary w-100 h-100 d-flex align-items-center justify-content-center text-white">
+                                                        No Image
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="team-social w-25">
+                                                <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
+                                                <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
+                                                <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
+                                            </div>
+                                        </div>
+                                        <div className="p-4">
+                                            <h5>{attrs.Name || "Full Name"}</h5>
+                                            <span>{attrs.Designation || "Designation"}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="p-4">
-                                    <h5>Full Name</h5>
-                                    <span>Designation</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                            <div className="team-item rounded overflow-hidden">
-                                <div className="d-flex">
-                                    <img className="img-fluid w-75" src="/img/team-2.jpg" alt="" />
-                                    <div className="team-social w-25">
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h5>Full Name</h5>
-                                    <span>Designation</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                            <div className="team-item rounded overflow-hidden">
-                                <div className="d-flex">
-                                    <img className="img-fluid w-75" src="/img/team-3.jpg" alt="" />
-                                    <div className="team-social w-25">
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h5>Full Name</h5>
-                                    <span>Designation</span>
-                                </div>
-                            </div>
-                        </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

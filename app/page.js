@@ -1,55 +1,41 @@
 import React from 'react';
+import { fetchAPI } from '@/lib/api';
+import Hero from '@/components/Home/Hero';
+import TeamSection from '@/components/Sections/TeamSection';
+import ProjectSection from '@/components/Sections/ProjectSection';
 
-export default function Home() {
+export default async function Home() {
+    // Fetch data for the homepage
+    let homeData = null;
+    let teamMembers = [];
+    let projects = [];
+
+    try {
+        const [homeRes, teamRes, projectRes] = await Promise.all([
+            fetchAPI("/home-page", { 
+                populate: {
+                    HeroSlides: {
+                        populate: "*"
+                    }
+                }
+            }),
+            fetchAPI("/team-members", { populate: "*" }),
+            fetchAPI("/projects", { populate: "*" })
+        ]);
+
+        homeData = homeRes?.data;
+        teamMembers = teamRes?.data || [];
+        projects = projectRes?.data || [];
+    } catch (error) {
+        console.error("Failed to fetch homepage data:", error);
+    }
+
+    const heroSlides = homeData?.HeroSlides || [];
+
     return (
         <main>
             {/* Carousel Start */}
-            <div className="container-fluid p-0 pb-5 wow fadeIn" data-wow-delay="0.1s">
-                <div className="owl-carousel header-carousel position-relative">
-                    <div className="owl-carousel-item position-relative" data-dot="<img src='/img/carousel-1.jpg'>">
-                        <img className="img-fluid" src="/img/carousel-1.jpg" alt="" />
-                        <div className="owl-carousel-inner">
-                            <div className="container">
-                                <div className="row justify-content-start">
-                                    <div className="col-10 col-lg-8">
-                                        <h1 className="display-2 text-white animated slideInDown">Pioneers Of Solar And Renewable Energy</h1>
-                                        <p className="fs-5 fw-medium text-white mb-4 pb-3">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea elitr.</p>
-                                        <a href="" className="btn btn-primary rounded-pill py-3 px-5 animated slideInLeft">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="owl-carousel-item position-relative" data-dot="<img src='/img/carousel-2.jpg'>">
-                        <img className="img-fluid" src="/img/carousel-2.jpg" alt="" />
-                        <div className="owl-carousel-inner">
-                            <div className="container">
-                                <div className="row justify-content-start">
-                                    <div className="col-10 col-lg-8">
-                                        <h1 className="display-2 text-white animated slideInDown">Pioneers Of Solar And Renewable Energy</h1>
-                                        <p className="fs-5 fw-medium text-white mb-4 pb-3">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea elitr.</p>
-                                        <a href="" className="btn btn-primary rounded-pill py-3 px-5 animated slideInLeft">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="owl-carousel-item position-relative" data-dot="<img src='/img/carousel-3.jpg'>">
-                        <img className="img-fluid" src="/img/carousel-3.jpg" alt="" />
-                        <div className="owl-carousel-inner">
-                            <div className="container">
-                                <div className="row justify-content-start">
-                                    <div className="col-10 col-lg-8">
-                                        <h1 className="display-2 text-white animated slideInDown">Pioneers Of Solar And Renewable Energy</h1>
-                                        <p className="fs-5 fw-medium text-white mb-4 pb-3">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea elitr.</p>
-                                        <a href="" className="btn btn-primary rounded-pill py-3 px-5 animated slideInLeft">Read More</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Hero slides={heroSlides} />
             {/* Carousel End */}
 
             {/* Feature Start */}
@@ -99,7 +85,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            {/* Feature Start */}
+            {/* Feature End */}
 
             {/* About Start */}
             <div className="container-fluid bg-light overflow-hidden my-5 px-lg-0">
@@ -134,90 +120,29 @@ export default function Home() {
                         <h1 className="mb-4">We Are Pioneers In The World Of Renewable Energy</h1>
                     </div>
                     <div className="row g-4">
-                        <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
-                            <div className="service-item rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-1.jpg" alt="" />
-                                <div className="position-relative p-4 pt-0">
-                                    <div className="service-icon">
-                                        <i className="fa fa-solar-panel fa-3x"></i>
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay={`${0.1 * i}s`}>
+                                <div className="service-item rounded overflow-hidden">
+                                    <img className="img-fluid" src={`/img/img-600x400-${i}.jpg`} alt="" />
+                                    <div className="position-relative p-4 pt-0">
+                                        <div className="service-icon">
+                                            <i className={`fa ${i % 3 === 1 ? 'fa-solar-panel' : i % 3 === 2 ? 'fa-wind' : 'fa-lightbulb'} fa-3x`}></i>
+                                        </div>
+                                        <h4 className="mb-3">
+                                            {i % 3 === 1 ? 'Solar Panels' : i % 3 === 2 ? 'Wind Turbines' : 'Hydropower Plants'}
+                                        </h4>
+                                        <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
+                                        <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
                                     </div>
-                                    <h4 className="mb-3">Solar Panels</h4>
-                                    <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
-                                    <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
-                            <div className="service-item rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-2.jpg" alt="" />
-                                <div className="position-relative p-4 pt-0">
-                                    <div className="service-icon">
-                                        <i className="fa fa-wind fa-3x"></i>
-                                    </div>
-                                    <h4 className="mb-3">Wind Turbines</h4>
-                                    <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
-                                    <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
-                            <div className="service-item rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-3.jpg" alt="" />
-                                <div className="position-relative p-4 pt-0">
-                                    <div className="service-icon">
-                                        <i className="fa fa-lightbulb fa-3x"></i>
-                                    </div>
-                                    <h4 className="mb-3">Hydropower Plants</h4>
-                                    <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
-                                    <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
-                            <div className="service-item rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-4.jpg" alt="" />
-                                <div className="position-relative p-4 pt-0">
-                                    <div className="service-icon">
-                                        <i className="fa fa-solar-panel fa-3x"></i>
-                                    </div>
-                                    <h4 className="mb-3">Solar Panels</h4>
-                                    <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
-                                    <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
-                            <div className="service-item rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-5.jpg" alt="" />
-                                <div className="position-relative p-4 pt-0">
-                                    <div className="service-icon">
-                                        <i className="fa fa-wind fa-3x"></i>
-                                    </div>
-                                    <h4 className="mb-3">Wind Turbines</h4>
-                                    <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
-                                    <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
-                            <div className="service-item rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-6.jpg" alt="" />
-                                <div className="position-relative p-4 pt-0">
-                                    <div className="service-icon">
-                                        <i className="fa fa-lightbulb fa-3x"></i>
-                                    </div>
-                                    <h4 className="mb-3">Hydropower Plants</h4>
-                                    <p>Stet stet justo dolor sed duo. Ut clita sea sit ipsum diam lorem diam.</p>
-                                    <a className="small fw-medium" href="">Read More<i className="fa fa-arrow-right ms-2"></i></a>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
             {/* Service End */}
 
-            {/* Feature Start */}
+            {/* Why Choose Us Feature Start */}
             <div className="container-fluid bg-light overflow-hidden my-5 px-lg-0">
                 <div className="container feature px-lg-0">
                     <div className="row g-0 mx-lg-0">
@@ -282,113 +207,10 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            {/* Feature End */}
+            {/* Why Choose Us Feature End */}
 
             {/* Projects Start */}
-            <div className="container-xxl py-5">
-                <div className="container">
-                    <div className="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style={{ maxWidth: '600px' }}>
-                        <h6 className="text-primary">Our Projects</h6>
-                        <h1 className="mb-4">Visit Our Latest Solar And Renewable Energy Projects</h1>
-                    </div>
-                    <div className="row mt-n2 wow fadeInUp" data-wow-delay="0.3s">
-                        <div className="col-12 text-center">
-                            <ul className="list-inline mb-5" id="portfolio-flters">
-                                <li className="mx-2 active" data-filter="*">All</li>
-                                <li className="mx-2" data-filter=".first">Solar Panels</li>
-                                <li className="mx-2" data-filter=".second">Wind Turbines</li>
-                                <li className="mx-2" data-filter=".third">Hydropower Plants</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="row g-4 portfolio-container wow fadeInUp" data-wow-delay="0.5s">
-                        <div className="col-lg-4 col-md-6 portfolio-item first">
-                            <div className="portfolio-img rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-6.jpg" alt="" />
-                                <div className="portfolio-btn">
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href="/img/img-600x400-6.jpg" data-lightbox="portfolio"><i className="fa fa-eye"></i></a>
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href=""><i className="fa fa-link"></i></a>
-                                </div>
-                            </div>
-                            <div className="pt-3">
-                                <p className="text-primary mb-0">Solar Panels</p>
-                                <hr className="text-primary w-25 my-2" />
-                                <h5 className="lh-base">We Are pioneers of solar & renewable energy industry</h5>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 portfolio-item second">
-                            <div className="portfolio-img rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-5.jpg" alt="" />
-                                <div className="portfolio-btn">
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href="/img/img-600x400-5.jpg" data-lightbox="portfolio"><i className="fa fa-eye"></i></a>
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href=""><i className="fa fa-link"></i></a>
-                                </div>
-                            </div>
-                            <div className="pt-3">
-                                <p className="text-primary mb-0">Wind Turbines</p>
-                                <hr className="text-primary w-25 my-2" />
-                                <h5 className="lh-base">We Are pioneers of solar & renewable energy industry</h5>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 portfolio-item third">
-                            <div className="portfolio-img rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-4.jpg" alt="" />
-                                <div className="portfolio-btn">
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href="/img/img-600x400-4.jpg" data-lightbox="portfolio"><i className="fa fa-eye"></i></a>
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href=""><i className="fa fa-link"></i></a>
-                                </div>
-                            </div>
-                            <div className="pt-3">
-                                <p className="text-primary mb-0">Hydropower Plants</p>
-                                <hr className="text-primary w-25 my-2" />
-                                <h5 className="lh-base">We Are pioneers of solar & renewable energy industry</h5>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 portfolio-item first">
-                            <div className="portfolio-img rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-3.jpg" alt="" />
-                                <div className="portfolio-btn">
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href="/img/img-600x400-3.jpg" data-lightbox="portfolio"><i className="fa fa-eye"></i></a>
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href=""><i className="fa fa-link"></i></a>
-                                </div>
-                            </div>
-                            <div className="pt-3">
-                                <p className="text-primary mb-0">Solar Panels</p>
-                                <hr className="text-primary w-25 my-2" />
-                                <h5 className="lh-base">We Are pioneers of solar & renewable energy industry</h5>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 portfolio-item second">
-                            <div className="portfolio-img rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-2.jpg" alt="" />
-                                <div className="portfolio-btn">
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href="/img/img-600x400-2.jpg" data-lightbox="portfolio"><i className="fa fa-eye"></i></a>
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href=""><i className="fa fa-link"></i></a>
-                                </div>
-                            </div>
-                            <div className="pt-3">
-                                <p className="text-primary mb-0">Wind Turbines</p>
-                                <hr className="text-primary w-25 my-2" />
-                                <h5 className="lh-base">We Are pioneers of solar & renewable energy industry</h5>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 portfolio-item third">
-                            <div className="portfolio-img rounded overflow-hidden">
-                                <img className="img-fluid" src="/img/img-600x400-1.jpg" alt="" />
-                                <div className="portfolio-btn">
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href="/img/img-600x400-1.jpg" data-lightbox="portfolio"><i className="fa fa-eye"></i></a>
-                                    <a className="btn btn-lg-square btn-outline-light rounded-circle mx-1" href=""><i className="fa fa-link"></i></a>
-                                </div>
-                            </div>
-                            <div className="pt-3">
-                                <p className="text-primary mb-0">Hydropower Plants</p>
-                                <hr className="text-primary w-25 my-2" />
-                                <h5 className="lh-base">We Are pioneers of solar & renewable energy industry</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ProjectSection projects={projects} />
             {/* Projects End */}
 
             {/* Quote Start */}
@@ -440,64 +262,7 @@ export default function Home() {
             {/* Quote End */}
 
             {/* Team Start */}
-            <div className="container-xxl py-5">
-                <div className="container">
-                    <div className="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style={{ maxWidth: '600px' }}>
-                        <h6 className="text-primary">Team Member</h6>
-                        <h1 className="mb-4">Experienced Team Members</h1>
-                    </div>
-                    <div className="row g-4">
-                        <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                            <div className="team-item rounded overflow-hidden">
-                                <div className="d-flex">
-                                    <img className="img-fluid w-75" src="/img/team-1.jpg" alt="" />
-                                    <div className="team-social w-25">
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h5>Full Name</h5>
-                                    <span>Designation</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                            <div className="team-item rounded overflow-hidden">
-                                <div className="d-flex">
-                                    <img className="img-fluid w-75" src="/img/team-2.jpg" alt="" />
-                                    <div className="team-social w-25">
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h5>Full Name</h5>
-                                    <span>Designation</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                            <div className="team-item rounded overflow-hidden">
-                                <div className="d-flex">
-                                    <img className="img-fluid w-75" src="/img/team-3.jpg" alt="" />
-                                    <div className="team-social w-25">
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-facebook-f"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-twitter"></i></a>
-                                        <a className="btn btn-lg-square btn-outline-primary rounded-circle mt-3" href=""><i className="fab fa-instagram"></i></a>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h5>Full Name</h5>
-                                    <span>Designation</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <TeamSection members={teamMembers} />
             {/* Team End */}
 
             {/* Testimonial Start */}
@@ -508,45 +273,21 @@ export default function Home() {
                         <h1 className="mb-4">What Our Clients Say!</h1>
                     </div>
                     <div className="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
-                        <div className="testimonial-item text-center">
-                            <div className="testimonial-img position-relative">
-                                <img className="img-fluid rounded-circle mx-auto mb-5" src="/img/testimonial-1.jpg" />
-                                <div className="btn-square bg-primary rounded-circle">
-                                    <i className="fa fa-quote-left text-white"></i>
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="testimonial-item text-center">
+                                <div className="testimonial-img position-relative">
+                                    <img className="img-fluid rounded-circle mx-auto mb-5" src={`/img/testimonial-${i}.jpg`} alt="" />
+                                    <div className="btn-square bg-primary rounded-circle">
+                                        <i className="fa fa-quote-left text-white"></i>
+                                    </div>
+                                </div>
+                                <div className="testimonial-text text-center rounded p-4">
+                                    <p>Clita clita tempor justo dolor ipsum amet kasd amet duo justo duo duo labore sed sed. Magna ut diam sit et amet stet eos sed clita erat magna elitr erat sit sit erat at rebum justo sea clita.</p>
+                                    <h5 className="mb-1">Client Name</h5>
+                                    <span className="fst-italic">Profession</span>
                                 </div>
                             </div>
-                            <div className="testimonial-text text-center rounded p-4">
-                                <p>Clita clita tempor justo dolor ipsum amet kasd amet duo justo duo duo labore sed sed. Magna ut diam sit et amet stet eos sed clita erat magna elitr erat sit sit erat at rebum justo sea clita.</p>
-                                <h5 className="mb-1">Client Name</h5>
-                                <span className="fst-italic">Profession</span>
-                            </div>
-                        </div>
-                        <div className="testimonial-item text-center">
-                            <div className="testimonial-img position-relative">
-                                <img className="img-fluid rounded-circle mx-auto mb-5" src="/img/testimonial-2.jpg" />
-                                <div className="btn-square bg-primary rounded-circle">
-                                    <i className="fa fa-quote-left text-white"></i>
-                                </div>
-                            </div>
-                            <div className="testimonial-text text-center rounded p-4">
-                                <p>Clita clita tempor justo dolor ipsum amet kasd amet duo justo duo duo labore sed sed. Magna ut diam sit et amet stet eos sed clita erat magna elitr erat sit sit erat at rebum justo sea clita.</p>
-                                <h5 className="mb-1">Client Name</h5>
-                                <span className="fst-italic">Profession</span>
-                            </div>
-                        </div>
-                        <div className="testimonial-item text-center">
-                            <div className="testimonial-img position-relative">
-                                <img className="img-fluid rounded-circle mx-auto mb-5" src="/img/testimonial-3.jpg" />
-                                <div className="btn-square bg-primary rounded-circle">
-                                    <i className="fa fa-quote-left text-white"></i>
-                                </div>
-                            </div>
-                            <div className="testimonial-text text-center rounded p-4">
-                                <p>Clita clita tempor justo dolor ipsum amet kasd amet duo justo duo duo labore sed sed. Magna ut diam sit et amet stet eos sed clita erat magna elitr erat sit sit erat at rebum justo sea clita.</p>
-                                <h5 className="mb-1">Client Name</h5>
-                                <span className="fst-italic">Profession</span>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>

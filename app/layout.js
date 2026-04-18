@@ -4,16 +4,40 @@ import Spinner from "@/components/Spinner";
 import Topbar from "@/components/Topbar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { fetchAPI } from "@/lib/api";
 
 export const metadata = {
   title: "Solartec - Renewable Energy Website Template",
   description: "Pioneers Of Solar And Renewable Energy",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Fetch global data from Strapi
+  let globalData = null;
+  try {
+    const globalRes = await fetchAPI("/global", { 
+      populate: {
+        Navbar: {
+          populate: "*"
+        },
+        Footer: {
+          populate: "*"
+        }
+      } 
+    });
+    globalData = globalRes?.data || null;
+  } catch (error) {
+    console.error("Failed to fetch global data:", error);
+  }
+
+  const navbarData = globalData?.Navbar;
+  const footerData = globalData?.Footer;
+  const copyright = globalData?.Copyright;
+
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
+
         {/* Google Web Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -34,12 +58,14 @@ export default function RootLayout({ children }) {
         {/* Template Stylesheet */}
         <link href="/css/style.css" rel="stylesheet" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <Spinner />
-        <Topbar />
-        <Navbar />
+        <Topbar data={footerData} />
+
+        <Navbar data={navbarData} />
         {children}
-        <Footer />
+        <Footer data={footerData} copyright={copyright} />
+
 
         {/* JavaScript Libraries */}
         <Script src="https://code.jquery.com/jquery-3.4.1.min.js" strategy="beforeInteractive" />
