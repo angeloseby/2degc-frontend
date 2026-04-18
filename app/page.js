@@ -47,13 +47,13 @@ export default async function Home() {
             fetchAPI("/global", { populate: { Quote: { populate: { Image: { populate: '*' } } } } })
         ]);
 
-        homeData = homeRes?.data;
-        aboutPageData = aboutRes?.data;
+        homeData = homeRes?.data || null;
+        aboutPageData = aboutRes?.data || null;
         services = serviceRes?.data || [];
         teamMembers = teamRes?.data || [];
         projects = projectRes?.data || [];
         categories = categoryRes?.data || [];
-        globalConfig = globalRes?.data;
+        globalConfig = globalRes?.data || null;
     } catch (error) {
         console.error("Failed to fetch homepage data:", error);
     }

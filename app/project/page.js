@@ -8,7 +8,6 @@ export const metadata = {
   title: "Our Projects - 2degc",
 };
 
-
 export default async function ProjectPage() {
     let projectPageSettings = null;
     let projects = [];
@@ -23,10 +22,10 @@ export default async function ProjectPage() {
             fetchAPI("/global", { populate: { Quote: { populate: { Image: { populate: '*' } } } } })
         ]);
         
-        projectPageSettings = pageRes?.data;
+        projectPageSettings = pageRes?.data || null;
         projects = projectRes?.data || [];
         categories = categoryRes?.data || [];
-        globalConfig = globalRes?.data;
+        globalConfig = globalRes?.data || null;
     } catch (error) {
         console.error("Failed to fetch projects data:", error);
     }

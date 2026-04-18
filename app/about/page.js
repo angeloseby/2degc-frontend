@@ -9,7 +9,6 @@ export const metadata = {
   title: "About Us - 2degc",
 };
 
-
 export default async function About() {
     // Fetch all About page and Team data
     let aboutPageData = null;
@@ -32,7 +31,7 @@ export default async function About() {
             fetchAPI("/team-members", { populate: "*" })
         ]);
 
-        aboutPageData = aboutRes?.data;
+        aboutPageData = aboutRes?.data || null;
         teamMembers = teamRes?.data || [];
     } catch (error) {
         console.error("Failed to fetch About page data:", error);

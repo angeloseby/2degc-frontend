@@ -2,32 +2,27 @@ import React from 'react';
 import { fetchAPI } from '@/lib/api';
 import PageHeader from '@/components/Sections/PageHeader';
 import ServicesSection from '@/components/Sections/ServicesSection';
-import TestimonialSection from '@/components/Sections/TestimonialSection';
 import QuoteSection from '@/components/Sections/QuoteSection';
 
 export const metadata = {
   title: "Our Services - 2degc",
 };
 
-
 export default async function Service() {
     let servicePageSettings = null;
     let services = [];
-    let testimonials = [];
     let globalConfig = null;
 
     try {
-        const [pageRes, serviceRes, testimonialRes, globalRes] = await Promise.all([
+        const [pageRes, serviceRes, globalRes] = await Promise.all([
             fetchAPI("/service-page", { populate: ["BannerImage"] }),
             fetchAPI("/services", { populate: ["Image"] }),
-            fetchAPI("/home-page", { populate: { Testimonials: { populate: { Items: { populate: { Image: { populate: '*' } } } } } } }),
             fetchAPI("/global", { populate: { Quote: { populate: { Image: { populate: '*' } } } } })
         ]);
-
-        servicePageSettings = pageRes?.data;
+        
+        servicePageSettings = pageRes?.data || null;
         services = serviceRes?.data || [];
-        testimonials = testimonialRes?.data?.Testimonials || null;
-        globalConfig = globalRes?.data;
+        globalConfig = globalRes?.data || null;
     } catch (error) {
         console.error("Failed to fetch service page data:", error);
     }
@@ -39,15 +34,13 @@ export default async function Service() {
         <main>
             <PageHeader 
                 title={pageAttrs.Title || "Our Services"} 
-                bannerImage={pageAttrs.BannerImage}
+                bannerImage={pageAttrs.BannerImage} 
                 breadcrumbs={[{ label: "Services" }]}
             />
 
             <ServicesSection services={services} />
 
             <QuoteSection data={quoteData} />
-
-            <TestimonialSection data={testimonials} />
         </main>
     );
 }

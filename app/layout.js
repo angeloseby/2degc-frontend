@@ -31,9 +31,9 @@ export default async function RootLayout({ children }) {
     console.error("Failed to fetch global data:", error);
   }
 
-  const navbarData = globalData?.Navbar;
-  const footerData = globalData?.Footer;
-  const copyright = globalData?.Copyright;
+  const navbarData = globalData?.Navbar || null;
+  const footerData = globalData?.Footer || null;
+  const copyright = globalData?.Copyright || null;
 
   return (
     <html lang="en" data-scroll-behavior="smooth">
